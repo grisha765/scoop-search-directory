@@ -3,6 +3,7 @@ import os
 from bs4 import BeautifulSoup as bs
 import re
 import argparse
+from prettytable import PrettyTable
 
 aparser = argparse.ArgumentParser()
 aparser.add_argument('search', nargs='?', default='')
@@ -49,12 +50,17 @@ def parser():
     packets_names = soup.find_all(text=pat_name)
     pat_repository = re.compile(r'"Repository":"(.*?)"', re.MULTILINE | re.DOTALL)
     packets_repository = soup.find_all(text=pat_repository)
+    table = PrettyTable()
+    table.field_names = ['Number','App Name','Bucket']
     for i in range(1):
         pass
     for name in packets_names:
         i += 1
-        rep_name = pat_repository.search(name.text).group(1).replace('/',' ')
-        print (f'{i}) ' + pat_name.search(name.text).group(1) + "\nAdd bucket: \"scoop bucket add " + rep_name.split()[-1] + ' '+rep_name.replace(' ','/') + "\"")
+        i_number = f'{i})'
+        rep_name = 'scoop bucket add "'+pat_repository.search(name.text).group(1).replace('/',' ').replace(' ','/').split()[-1] + '"'
+        pat_name1 = pat_name.search(name.text).group(1)
+        table.add_row([i_number, pat_name1, rep_name])
+    print(table)
         
     print('\nTo install the app:\nscoop install \"app\"')
 parser()

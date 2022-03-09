@@ -7,6 +7,7 @@ idna==3.3
 importlib-metadata==4.11.2
 lxml==4.8.0
 pefile==2021.9.3
+prettytable==3.2.0
 pyinstaller==4.9
 pyinstaller-hooks-contrib==2022.2
 pywin32-ctypes==0.2.0
@@ -14,4 +15,5 @@ requests==2.27.1
 soupsieve==2.3.1
 typing-extensions==4.1.1
 urllib3==1.26.8
+wcwidth==0.2.5
 zipp==3.7.0
