@@ -1,3 +1,4 @@
+#pyinstaller --onefile --icon ico.ico --noconsole main.py --name scoop-sd
 import requests
 import os
 from bs4 import BeautifulSoup as bs
@@ -46,21 +47,39 @@ def parser():
     r = requests.post('https://scoopsearch.search.windows.net/indexes/apps/docs/search', headers=headers, params=params, json=json_data)
     soup = bs(r.text, "lxml")
     #print(soup)
-    pat_name = re.compile(r'"NameSuffix":"(.*?)"', re.MULTILINE | re.DOTALL)
-    packets_names = soup.find_all(text=pat_name)
-    pat_repository = re.compile(r'"Repository":"(.*?)"', re.MULTILINE | re.DOTALL)
-    packets_repository = soup.find_all(text=pat_repository)
+    pac_name = re.compile(r'"NameSuffix":"(.*?)"', re.MULTILINE | re.DOTALL)
+    packets_names = soup.find_all(text=pac_name)
+    pac_repository = re.compile(r'"Repository":"(.*?)"', re.MULTILINE | re.DOTALL)
+    packets_repository = soup.find_all(text=pac_repository)
     table = PrettyTable()
     table.field_names = ['Number','App Name','Bucket']
-    for i in range(1):
-        pass
+    array_app = []
+    array_bucket = []
+    i = -1
     for name in packets_names:
         i += 1
         i_number = f'{i})'
-        rep_name = 'scoop bucket add "'+pat_repository.search(name.text).group(1).replace('/',' ').replace(' ','/').split()[-1] + '"'
-        pat_name1 = pat_name.search(name.text).group(1)
-        table.add_row([i_number, pat_name1, rep_name])
+        rep_name = pac_repository.search(name.text).group(1).replace('/',' ').split()[-1]
+        rep_url = pac_repository.search(name.text).group(1).replace('/',' ').replace(' ','/').split()[-1]
+        bucket = f'scoop bucket add {rep_name} {rep_url}'
+        app_name = pac_name.search(name.text).group(1)
+        table.add_row([i_number, app_name, bucket])
+        array_bucket.append(bucket)
+        array_app.append(app_name)
     print(table)
-        
-    print('\nTo install the app:\nscoop install \"app\"')
+    func_select = input('To install the app, type \'i\'.\nTo add a repository, type \'b\'.\nTo exit, type \'q\'.\n(Select)>> ')
+    if func_select == 'q':
+        exit()
+    if func_select == 'i':
+        app_number = input('Select the application number to install.\n(Install_app)>> ')
+        app_install = "scoop install " + array_app[int(app_number)]
+        os.system(app_install)
+    if func_select == 'b':
+        bucket_number = input('Select the bucket number to add it.\n(Add_bucket)>> ')
+        bucket_add = array_bucket[int(bucket_number)]
+        os.system(bucket_add)
 parser()
+
+
+
+
